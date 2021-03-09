@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this file. If not, see <https://www.gnu.org/licenses/>.
 *)
+
 unit Oz.El.Classes;
 
 interface
@@ -25,7 +26,8 @@ uses
 type
   TELContext = class;
 
-  // Encapsulation of the base model of an object and its properties
+{$Region 'TValueReference: Encapsulation of the base model of an object and its properties'}
+
   TValueReference = class
   private
     FObj: TObject;
@@ -37,7 +39,10 @@ type
     property Prop: Pointer read FProp;
   end;
 
-  // Encapsulation of the base model of an object and its method
+{$EndRegion}
+
+{$Region 'TMethodInfo: Encapsulation of the base model of an object and its method'}
+
   TMethodInfo = class
   private
     FObj: TObject;
@@ -49,7 +54,10 @@ type
     property Method: Pointer read FMethod;
   end;
 
-  // Expression (method or variable)
+{$EndRegion}
+
+{$Region 'TExpression: Expression (method or variable)'}
+
   TExpression  = class
   private
     FExpr: string;
@@ -59,7 +67,10 @@ type
     function GetExpressionString: string;
   end;
 
-  // Expression, the value of which can be obtained or set
+{$EndRegion}
+
+{$Region 'TValueExpression: Expression, the value of which can be obtained or set'}
+
   TValueExpression = class(TExpression)
   public
     function GetValue(Ctx: TElContext): TValue; virtual; abstract;
@@ -68,7 +79,10 @@ type
     function IsReadOnly(Ctx: TElContext): boolean; virtual;
   end;
 
-  // Function
+{$EndRegion}
+
+{$Region 'TMethodExpression: Function'}
+
   TMethodExpression  = class(TExpression)
   public
     // Get information about the method signature
@@ -77,6 +91,8 @@ type
     procedure SetValue(Ctx: TElContext; Value: TValue); virtual; abstract;
     function IsReadOnly(Ctx: TElContext; Obj: TObject): boolean; virtual; abstract;
   end;
+
+{$EndRegion}
 
   // List of variables (used when parsing an expression)
   TVariableMapper = class
@@ -267,7 +283,7 @@ end;
 function TElContext.GetContext(Key: TCLass): TObject;
 begin
   if not FContextObjects.TryGetValue(Key, Result) then
-    raise Exception.CreateFmt('GetContext: в контексте не обнаружен объект %s', [Key.ClassName]);
+    raise Exception.CreateFmt('GetContext: there is no object detected in the context %s', [Key.ClassName]);
 end;
 
 procedure TElContext.PutContext(Key: TCLass; ContextObject: TObject);

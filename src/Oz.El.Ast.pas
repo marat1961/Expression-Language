@@ -551,7 +551,7 @@ begin
   Result := Ctx.GetElResolver.GetValue(Ctx, nil, Image);
   if not Ctx.PropertyResolved then
   begin
-    // ≈сли не найден идентификатор - добавить пользовательскую переменную
+    // If no identifier is found - add a user variable
     Expr := TUserVarExpression.Create(Image);
     Map.SetVariable(Image, Expr);
     Result := '';
