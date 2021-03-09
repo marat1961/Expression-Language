@@ -15,12 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this file. If not, see <https://www.gnu.org/licenses/>.
 *)
+
 unit Oz.El.Parser;
 
 interface
 
 uses
-  Classes, SysUtils, Rtti, Dialogs, ElScanner, ElAst;
+  Classes, SysUtils, Rtti, Dialogs, Oz.El.Scanner, Oz.El.Ast;
 
 type
   // Expression parser

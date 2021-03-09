@@ -15,12 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this file. If not, see <https://www.gnu.org/licenses/>.
 *)
+
 unit Oz.El.Factory;
 
 interface
 
 uses
-  SysUtils, TypInfo, Rtti, Generics.Defaults, ElAst;
+  SysUtils, TypInfo, Rtti, Generics.Defaults, Oz.El.Ast;
 
 function GetElFactory: IExpressionFactory;
 procedure CloseElFactory;
@@ -28,7 +29,7 @@ procedure CloseElFactory;
 implementation
 
 uses
-  Dialogs, ElScanner, El, ElParser, ElUtils;
+  Oz.El.Scanner, Oz.El.Classes, Oz.El.Parser, Oz.El.Utils;
 
 {$Region 'TExpressionFactory'}
 
@@ -107,7 +108,7 @@ begin
   FreeAndNil(TExpressionFactory.Factory);
 end;
 
-{ ExperssionFactory }
+{$Region 'TExpressionFactory'}
 
 class destructor TExpressionFactory.Destroy;
 begin
@@ -141,9 +142,11 @@ begin
   Result := nil;
 end;
 
-{ TMyContext }
+{$EndRegion}
 
-constructor TMyContext.Create;
+{$Region 'TMyContext'}
+
+constructor TMyContext.Create;
 begin
   inherited Create;
   FVarMap := TVariableMapper.Create;
@@ -172,7 +175,9 @@ begin
   Result := FVarMap;
 end;
 
-{ TValueExpression }
+{$EndRegion}
+
+{$Region 'TValueExpression'}
 
 constructor TValueExpressionImpl.Create(const Expr: string; Node: TNode; ExpectedType: PTypeInfo);
 begin
@@ -209,7 +214,9 @@ begin
   FNode.SetValue(Ctx, Value);
 end;
 
-{ TMyResolver }
+{$EndRegion}
+
+{$Region 'TMyResolver'}
 
 function TMyResolver.GetValue(Ctx: TElContext; Obj: TObject; const Prop: TValue): TValue;
 var
@@ -232,6 +239,7 @@ begin
   end;
 end;
 
+{$EndRegion}
 
 end.
 

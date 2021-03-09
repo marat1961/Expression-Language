@@ -15,22 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this file. If not, see <https://www.gnu.org/licenses/>.
 *)
+
 unit Oz.El.Ast;
 
 interface
 
 uses
   SysUtils, Classes, Generics.Collections, Rtti, TypInfo,
-  El, ElScanner, ElUtils;
+  Oz.El.Classes, Oz.El.Scanner, Oz.El.Utils;
 
 type
-
   TNode = class;
+
+{$Region 'TNodeVisitor'}
 
   TNodeVisitor = class
   public
     procedure Visit(Node: TNode); virtual; abstract;
   end;
+
+{$EndRegion}
+
+{$Region 'TNode'}
 
   // The basic type of all nodes included in the abstract syntax tree.
   TNode = class
@@ -71,7 +77,10 @@ type
     property Image: string read FImage;
   end;
 
-  // Constant - string, number or Boolean
+{$EndRegion}
+
+{$Region 'TAstLiteralExpression: Constant - string, number or Boolean'}
+
   TAstLiteralExpression = class(TNode)
   private
     FValue: TValue;
@@ -83,7 +92,10 @@ type
     procedure SetImage(const Image: string); virtual;
   end;
 
-  // Variable or function identifier
+{$EndRegion}
+
+{$Region 'TAstLiteralExpression: Variable or function identifier'}
+
   TAstIdentifier = class(TNode)
   public
     constructor Create(Op: TSymbol; const Ident: string);
@@ -93,7 +105,11 @@ type
     function IsReadOnly(Ctx: TELContext): Boolean; override;
   end;
 
-  // The expression in parentheses ident ( '[' Expr ']' | '(' Expr, [',' Expr] ')' ) )
+{$EndRegion}
+
+{$Region 'TAstBracedExpression: The expression in parentheses ident'}
+
+  // ( '[' Expr ']' | '(' Expr, [',' Expr] ')' ) )
   TAstBracedExpression = class(TNode)
   public
     function GetType(Ctx: TELContext): PTypeInfo; override;
@@ -102,40 +118,60 @@ type
     function IsReadOnly(Ctx: TELContext): Boolean; override;
   end;
 
-  // Conditional operator - BoolExpr ? Expr1 : Expr2
+{$EndRegion}
+
+{$Region 'TAstChoice: Conditional operator - BoolExpr ? Expr1 : Expr2'}
+
   TAstChoice = class(TNode)
   public
     function GetType(Ctx: TELContext): PTypeInfo; override;
     function GetValue(Ctx: TELContext): TValue; override;
   end;
 
-  // Comparison operation - Expr1 RelOp Expr2
+{$EndRegion}
+
+{$Region 'TAstRelation: Comparison operation - Expr1 RelOp Expr2'}
+
   TAstRelation = class(TNode)
   public
     function GetType(Ctx: TELContext): PTypeInfo; override;
     function GetValue(Ctx: TELContext): TValue; override;
   end;
 
-  // Unary operation - [ '+' | '-' | 'empty' | 'not' ] Expr
+{$EndRegion}
+
+{$Region 'TAstUnaryOp: Unary operation - [ '+' | '-' | 'empty' | 'not' ] Expr'}
+
   TAstUnaryOp = class(TNode)
   public
     function GetType(Ctx: TELContext): PTypeInfo; override;
     function GetValue(Ctx: TELContext): TValue; override;
   end;
 
-  // Binary operation - '+' | '-' | '*' | '/' | 'div' | 'mod' ...
+{$EndRegion}
+
+{$Region 'TAstBinaryOp: Binary operation - '+' | '-' | '*' | '/' | 'div' | 'mod' ...'}
+
   TAstBinaryOp = class(TNode)
   public
     function GetType(Ctx: TELContext): PTypeInfo; override;
     function GetValue(Ctx: TELContext): TValue; override;
   end;
 
-  // Composite expression (any combination of text and bracketed expressions ${expr})
+{$EndRegion}
+
+{$Region 'TAstCompositeExpression: Composite expression'}
+
+  // (any combination of text and bracketed expressions ${expr})
   TAstCompositeExpression = class(TNode)
   public
     function GetType(Ctx: TELContext): PTypeInfo; override;
     function GetValue(Ctx: TELContext): TValue; override;
   end;
+
+{$EndRegion}
+
+{$Region 'IExpressionFactory'}
 
   IExpressionFactory = interface
     function GetContext: TELContext;
@@ -143,7 +179,10 @@ type
     function CreateMethodExpression(const Expr: string; ExpectedType: PTypeInfo; ParamTypes: array of PTypeInfo): TMethodExpression;
   end;
 
-  // User variable
+{$EndRegion}
+
+{$Region 'TUserVarExpression: User variable'}
+
   TUserVarExpression = class(TValueExpression)
   private
     FValue: TValue;
@@ -152,7 +191,10 @@ type
     procedure SetValue(Ctx: TElContext; Value: TValue); override;
   end;
 
-  // Hash table for parsed expressions
+{$EndRegion}
+
+{$Region 'TCachedExpression: Hash table for parsed expressions'}
+
   TCachedExpression = class(TNodeVisitor)
   private
     FTable: TDictionary<string, TNode>;
@@ -174,10 +216,12 @@ type
     procedure Visit(Node: TNode); override;
   end;
 
+{$EndRegion}
+
 implementation
 
 uses
-  ElFactory;
+  Oz.El.Factory;
 
 { TNode }
 
