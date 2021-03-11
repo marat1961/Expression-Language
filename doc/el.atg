@@ -1,12 +1,16 @@
-COMPILER EL
+COMPILER El
 (* Expression Language *)
 
-USES ParseTable;
+id = 0;
+str = 1;
 
-IGNORE  CHR(9) .. CHR(13)
+MACROS
+  prefix = "el" .
 
 CHARACTERS
-  eol = CHR(13) .
+  eol = '\r' .
+  lf = '\n' .
+  tab = '\t' .
   char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
   letter = "_" + char.
   digit = "0123456789" .
@@ -24,28 +28,30 @@ TOKENS
 
   Int = digit { digit } .
 
-  HexInt = "0" ( "x" | "X" ) hexDigit { hexDigit } .
+  HexInt = '0' ( 'x' | 'X' ) hexDigit { hexDigit } .
 
-  Float = digit { digit } "." { digit } [ ("E" |"e") [ "+" | "-" ] digit { digit } ] .
+  Float = digit { digit } '.' { digit } [ ('E' |'e') [ '+' | '-' ] digit { digit } ] .
 
   String =
   ( '"'
-  ( "\" "0" ( "x" | "X" ) hexDigit [ hexDigit ]
-  | "\" ( "t" | "b" | "n" | "r" | "f" | "'" | '"' | "\" )
+  ( '\\' '0' ( 'x' | 'X' ) hexDigit [ hexDigit ]
+  | '\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\'' | '"' | '\\' )
   | noApos )
   '"' ) |
-( "'"
-  ( "\" "0" ( "x" | "X" ) hexDigit [ hexDigit ]
-  | "\" ( "t" | "b" | "n" | "r" | "f" | "'" | '"' | "\" )
-  noQuote )
-  "'" ) .
+  ( '\''
+  ( '\\' '0' ( 'x' | 'X' ) hexDigit [ hexDigit ]
+  | '\'' ( 't' | 'b' | 'n' | 'r' | 'f' | '\'' | '"' | '\\' )
+  | noQuote )
+  '\'' ) .
+
+IGNORE eol + lf + tab
 
 PRODUCTIONS
 
-EL
+El
  =
-'${' Value '}'
-| '#{' Value '}'
+"${" Value '}'
+| "#{" Value '}'
 .
 
 Value
@@ -77,9 +83,9 @@ Factor
  =
 Number
 | String
-| 'true' | 'false'
-| ('null' | 'nil')
-| ('!' | 'not') Factor
+| "true" | "false"
+| ("null" | "nil")
+| ('!' | "not") Factor
 | '(' Expression ')'
 | Designator
 [ Parameters 
@@ -109,41 +115,41 @@ AddOp
  =
 '+'
 | '-' 
-| ( 'or' | '||'
+| ( "or" | "||"
 )
 .
 
 UnaryOp
  = 
 '-'
-| 'empty'
+| "empty"
 .
 
 MulOp
  =
-( 'and' | '&&' 
+( "and" | "&&" 
 )
 | '*'
 | '/'
-| 'div'
-| ( '%' | 'mod'
+| "div"
+| ( '%' | "mod"
 )
 .
  
 RelOp = 
-( '>' | 'gt'
+( '>' | "gt"
 )
-| ('<' | 'lt'
+| ('<' | "lt"
 )
-| ('>=' | 'ge'
+| (">=" | "ge"
 )
-| ('<=' | 'le'
+| ("<=" | "le"
 )
-| ('=' | '==' | 'eq'
+| ('=' | "==" | "eq"
 )
-| ('!=' | '<>' | 'ne'
+| ("!=" | "<>" | "ne"
 )
 .
 
-END EL.
+END El.
 
