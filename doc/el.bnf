@@ -1,0 +1,130 @@
+﻿LValue = ‘${‘ LValueInner ‘}’ | ‘#{‘ LValueInner ‘}’ 
+.
+
+LValueInner = Identifier 
+| NonLiteralValuePrefix (ValueSuffix)*
+.
+
+RValue ::= (RValueComponent1)+
+| (RValueComponent2)+
+.
+
+RValueComponent1 ::= ‘${‘ Expression ‘}’
+| LiteralExpression
+.
+
+RValueComponent2 ::= ‘#{‘ Expression ‘}’
+| LiteralExpression
+.
+
+MethodExpression ::= LValue
+.
+
+LiteralExpression::= (LiteralComponent)* ([$#])?
+.
+
+LiteralComponent ::= ([^$#\])*\([$#])?
+| ([^$#])*([$#][^{])
+| ([^$#])*
+.
+
+Expression ::= Expression1 ExpressionRest?
+.
+
+ExpressionRest ::= ‘?’ Expression ‘:’ Expression
+.
+
+Expression1 ::= Expression BinaryOp Expression
+| UnaryExpression
+.
+
+BinaryOp ::= 'and'
+| ‘&&’
+| ‘or’
+| ‘||’
+| '+'
+| '-'
+| '*'
+| '/'
+| 'div'
+| '%'
+| 'mod'
+| '>'
+| 'gt'
+| '<'
+| 'lt'
+| '>='
+| 'ge'
+| '<='
+| 'le'
+| '=='
+| ‘eq’
+| ‘!=’
+| ‘ne’
+.
+
+UnaryExpression ::= UnaryOp UnaryExpression
+| Value
+.
+
+UnaryOp ::= '-'
+| ‘!’
+| ‘not’
+| ‘empty’
+.
+
+Value ::= ValuePrefix (ValueSuffix)*
+.
+
+ValuePrefix ::= Literal
+| NonLiteralValuePrefix
+.
+
+NonLiteralValuePrefix ::= '(' Expression ')'
+| Identifier
+| FunctionInvocation
+.
+
+ValueSuffix ::= ‘.’ Identifier MethodParameters?
+| ‘[‘ Expression ‘]’ MethodParameters?
+.
+
+MethodParameters ::= '(' (Expression (‘,’ Expression )* )? ')'
+.
+
+Identifier ::= Java language identifier
+.
+
+FunctionInvocation::=(Identifier ‘:’)? Identifier ‘(‘
+( Expression ( ‘,’ Expression )* )? ‘)’
+.
+
+Literal ::= BooleanLiteral
+| IntegerLiteral
+| FloatingPointLiteral
+| StringLiteral
+| NullLiteral
+.
+
+BooleanLiteral ::= 'true'
+| ‘false’
+.
+
+StringLiteral ::= '([^'\]|\'|\\)*'
+| "([^”\]|\”|\\)*"
+.
+
+IntegerLiteral ::= [‘0’-’9’]+
+.
+
+FloatingPointLiteral::= ([‘0’-’9’])+ ‘.’ ([‘0’-’9’])* Exponent?
+| ‘.’ ([‘0’-’9’])+ Exponent?
+| ([‘0’-’9’])+ Exponent?
+.
+
+Exponent ::= [‘e’,’E’] ([‘+’,’-’])? ([‘0’-’9’])+
+.
+
+NullLiteral ::= 'null'
+.
+

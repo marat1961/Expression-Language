@@ -1,0 +1,149 @@
+COMPILER EL
+(* Expression Language *)
+
+USES ParseTable;
+
+IGNORE  CHR(9) .. CHR(13)
+
+CHARACTERS
+  eol = CHR(13) .
+  char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
+  letter = "_" + char.
+  digit = "0123456789" .
+  hexDigit = digit + "ABCDEF"  + "abcdef".
+  noQuote = ANY - "'" - eol .
+  noApos = ANY - '"' - eol .
+  noBrackets = ANY - "${" - "#{".
+
+  apos = '"' .
+  quote = "'" .
+
+TOKENS
+
+  Identifier = letter { letter | digit} .
+
+  Int = digit { digit } .
+
+  HexInt = "0" ( "x" | "X" ) hexDigit { hexDigit } .
+
+  Float = digit { digit } "." { digit } [ ("E" |"e") [ "+" | "-" ] digit { digit } ] .
+
+  String =
+  ( '"'
+  ( "\" "0" ( "x" | "X" ) hexDigit [ hexDigit ]
+  | "\" ( "t" | "b" | "n" | "r" | "f" | "'" | '"' | "\" )
+  | noApos )
+  '"' ) |
+( "'"
+  ( "\" "0" ( "x" | "X" ) hexDigit [ hexDigit ]
+  | "\" ( "t" | "b" | "n" | "r" | "f" | "'" | '"' | "\" )
+  noQuote )
+  "'" ) .
+
+PRODUCTIONS
+
+EL
+ =
+'${' Value '}'
+| '#{' Value '}'
+.
+
+Value
+ =
+Expression
+[ '?' Expression ':' Expression
+]
+.
+
+Expression
+ =
+SimpleExpression
+[ RelOp SimpleExpression
+]
+.
+
+SimpleExpression = [ UnaryOp ] Term { AddOp Term }
+.
+
+Term 
+ =
+Factor
+{ MulOp 
+Factor 
+}
+.
+
+Factor
+ =
+Number
+| String
+| 'true' | 'false'
+| ('null' | 'nil')
+| ('!' | 'not') Factor
+| '(' Expression ')'
+| Designator
+[ Parameters 
+]
+.
+
+Designator = {
+'.' Identifier
+| '[' Expression ']'
+}
+.
+ 
+Parameters = '(' [
+Expression 
+{ ',' Expression } 
+] ')'
+.
+
+Number 
+ =
+Int
+| HexInt
+| Float
+.
+
+AddOp
+ =
+'+'
+| '-' 
+| ( 'or' | '||'
+)
+.
+
+UnaryOp
+ = 
+'-'
+| 'empty'
+.
+
+MulOp
+ =
+( 'and' | '&&' 
+)
+| '*'
+| '/'
+| 'div'
+| ( '%' | 'mod'
+)
+.
+ 
+RelOp = 
+( '>' | 'gt'
+)
+| ('<' | 'lt'
+)
+| ('>=' | 'ge'
+)
+| ('<=' | 'le'
+)
+| ('=' | '==' | 'eq'
+)
+| ('!=' | '<>' | 'ne'
+)
+.
+
+END EL.
+
