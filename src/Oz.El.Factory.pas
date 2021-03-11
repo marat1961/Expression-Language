@@ -23,8 +23,12 @@ interface
 uses
   SysUtils, TypInfo, Rtti, Generics.Defaults, Oz.El.Ast;
 
+{$Region 'Subroutines'}
+
 function GetElFactory: IExpressionFactory;
 procedure CloseElFactory;
+
+{$EndRegion}
 
 implementation
 
@@ -91,22 +95,6 @@ type
   end;
 
 {$EndRegion}
-
-function GetELFactory: IExpressionFactory;
-begin
-  Result := TExpressionFactory.Factory;
-end;
-
-procedure CreateDrawingFactory(CacheTable: TCachedExpression);
-begin
-  FreeAndNil(TExpressionFactory.Factory);
-  TExpressionFactory.Factory.FContext.PutContext(TCachedExpression, CacheTable);
-end;
-
-procedure CloseElFactory;
-begin
-  FreeAndNil(TExpressionFactory.Factory);
-end;
 
 {$Region 'TExpressionFactory'}
 
@@ -237,6 +225,26 @@ begin
       Result := Prop;
     end;
   end;
+end;
+
+{$EndRegion}
+
+{$Region 'Subroutines'}
+
+function GetELFactory: IExpressionFactory;
+begin
+  Result := TExpressionFactory.Factory;
+end;
+
+procedure CreateDrawingFactory(CacheTable: TCachedExpression);
+begin
+  FreeAndNil(TExpressionFactory.Factory);
+  TExpressionFactory.Factory.FContext.PutContext(TCachedExpression, CacheTable);
+end;
+
+procedure CloseElFactory;
+begin
+  FreeAndNil(TExpressionFactory.Factory);
 end;
 
 {$EndRegion}

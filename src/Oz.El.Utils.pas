@@ -23,8 +23,10 @@ interface
 uses
   SysUtils, Rtti, TypInfo;
 
+{$Region 'VM: Virtual machine'}
+
 type
-  // Operations and Transformations
+
   VM = class sealed
   public type
     TValueType = (vtNull, vtString, vtBoolean, vtInteger, vtDouble, vtOther);
@@ -62,23 +64,23 @@ type
     class function IsEnumOp(const A, B: TValue): Boolean;
   public
     // Result := A + B
-    class function Add(const A, B: TValue): TValue; virtual;
+    class function Add(const A, B: TValue): TValue;
     // Result := A - B
-    class function Subtract(const A, B: TValue): TValue; virtual;
+    class function Subtract(const A, B: TValue): TValue;
     // Result := A * B
-    class function Multiply(const A, B: TValue): TValue; virtual;
+    class function Multiply(const A, B: TValue): TValue;
     // Result := A / B
-    class function Divide(const A, B: TValue): TValue; virtual;
+    class function Divide(const A, B: TValue): TValue;
     // Result := A mod B
-    class function Modulo(const A, B: TValue): TValue; virtual;
+    class function Modulo(const A, B: TValue): TValue;
     // Result := A and B
-    class function Conjunction(const A, B: TValue): TValue; virtual;
+    class function Conjunction(const A, B: TValue): TValue;
     // Result := A or B
-    class function Disjunction(const A, B: TValue): TValue; virtual;
+    class function Disjunction(const A, B: TValue): TValue;
     // Result := Empty V
-    class function Empty(const V: TValue): TValue; virtual;
+    class function Empty(const V: TValue): TValue;
     // Result := - V
-    class function Negate(const V: TValue): TValue; virtual;
+    class function Negate(const V: TValue): TValue;
   end;
 
 implementation
@@ -168,7 +170,7 @@ end;
 
 class function VM.CoerceToNumber(const V: TValue): TValue;
 var
-  S: string;
+  s: string;
 begin
   case GetTValueType(V) of
     vtNull:
@@ -179,11 +181,11 @@ begin
       Result := V.AsExtended;
     vtString:
       begin
-        S := V.AsString;
-        if Pos('.', S) = 0 then
-          Result := StrToInt64Def(S, 0)
+        s := V.AsString;
+        if Pos('.', s) = 0 then
+          Result := StrToInt64Def(s, 0)
         else
-          Result := StrToFloatDef(S, 0);
+          Result := StrToFloatDef(s, 0);
       end;
     else
       raise Exception.Create('error.CoerceToNumber');
@@ -373,7 +375,8 @@ end;
 
 class function VM.Modulo(const A, B: TValue): TValue;
 var
-  X, Y: TValue; N, D: Extended;
+  X, Y: TValue;
+  N, D: Extended;
 begin
   if A.IsEmpty and B.IsEmpty then
     Result := 0
@@ -393,7 +396,7 @@ end;
 
 class function VM.Conjunction(const A, B: TValue): TValue;
 begin
-  if CoerceToBoolean(A) = False then
+  if not CoerceToBoolean(A) then
     Result := False
   else
     Result := CoerceToBoolean(A);
@@ -401,7 +404,7 @@ end;
 
 class function VM.Disjunction(const A, B: TValue): TValue;
 begin
-  if CoerceToBoolean(A) = True then
+  if CoerceToBoolean(A) then
     Result := True
   else
     Result := CoerceToBoolean(A);
@@ -425,16 +428,16 @@ begin
     vtNull:
       Result := 0;
     vtInteger:
-      Result := - V.AsInt64;
+      Result := -V.AsInt64;
     vtDouble:
-      Result := - V.AsExtended;
+      Result := -V.AsExtended;
     vtString:
       begin
         Result := CoerceToNumber(V);
         if Result.Kind = tkFloat then
-          Result := - Result.AsExtended
+          Result := -Result.AsExtended
         else
-          Result := - Result.AsInt64;
+          Result := -Result.AsInt64;
       end;
     else
       raise Exception.Create('unary minus');

@@ -36,9 +36,8 @@ type
 
 {$EndRegion}
 
-{$Region 'TNode'}
+{$Region 'TNode: The basic type of all nodes included in the abstract syntax tree.'}
 
-  // The basic type of all nodes included in the abstract syntax tree.
   TNode = class
   private
     FOp: TSymbol;
@@ -223,7 +222,7 @@ implementation
 uses
   Oz.El.Factory;
 
-{ TNode }
+{$Region 'TNode'}
 
 constructor TNode.Create(Op: TSymbol);
 begin
@@ -270,7 +269,8 @@ begin
 end;
 
 procedure TNode.Accept(Visitor: TNodeVisitor);
-var i: Integer;
+var
+  i: Integer;
 begin
   Visitor.Visit(Self);
   if Children <> nil then
@@ -293,7 +293,9 @@ begin
   Result := False;
 end;
 
-{ TAstCompositeExpression }
+{$EndRegion}
+
+{$Region 'TAstCompositeExpression'}
 
 function TAstCompositeExpression.GetType(Ctx: TELContext): PTypeInfo;
 begin
@@ -301,7 +303,10 @@ begin
 end;
 
 function TAstCompositeExpression.GetValue(Ctx: TELContext): TValue;
-var Sb: TStringBuilder; V: TValue; i: Integer;
+var
+  Sb: TStringBuilder;
+  V: TValue;
+  i: Integer;
 begin
   Sb := TStringBuilder.Create;
   try
@@ -317,10 +322,13 @@ begin
   end;
 end;
 
-{ TAstLiteralExpression }
+{$EndRegion}
+
+{$Region 'TAstLiteralExpression'}
 
 constructor TAstLiteralExpression.Create(Op: TSymbol; const V: TValue);
-var s: string;
+var
+  s: string;
 begin
   inherited Create(Op);
   FValue := V;
@@ -391,7 +399,9 @@ begin
   end;
 end;
 
-{ TAstBracedExpression }
+{$EndRegion}
+
+{$Region 'TAstBracedExpression'}
 
 function TAstBracedExpression.GetType(Ctx: TELContext): PTypeInfo;
 begin
@@ -413,10 +423,13 @@ begin
   Children[0].SetValue(Ctx, Value);
 end;
 
-{ TAstChoice }
+{$EndRegion}
+
+{$Region 'TAstChoice'}
 
 function TAstChoice.GetType(Ctx: TELContext): PTypeInfo;
-var V: TValue;
+var
+  V: TValue;
 begin
   V := GetValue(Ctx);
   if V.IsEmpty then
@@ -436,7 +449,9 @@ begin
     Result := Children[2].GetValue(Ctx);
 end;
 
-{ TAstRelation }
+{$EndRegion}
+
+{$Region 'TAstRelation'}
 
 function TAstRelation.GetType(Ctx: TELContext): PTypeInfo;
 begin
@@ -444,7 +459,8 @@ begin
 end;
 
 function TAstRelation.GetValue(Ctx: TELContext): TValue;
-var X, Y: TValue;
+var
+  X, Y: TValue;
 begin
   X := Children[0].GetValue(Ctx);
   Y := Children[1].GetValue(Ctx);
@@ -467,10 +483,13 @@ begin
     end;
 end;
 
-{ TAstUnaryOp }
+{$EndRegion}
+
+{$Region 'TAstUnaryOp'}
 
 function TAstUnaryOp.GetType(Ctx: TELContext): PTypeInfo;
-var V: TValue;
+var
+  V: TValue;
 begin
   V := GetValue(Ctx);
   if V.IsEmpty then
@@ -480,7 +499,8 @@ begin
 end;
 
 function TAstUnaryOp.GetValue(Ctx: TELContext): TValue;
-var V: TValue;
+var
+  V: TValue;
 begin
   V := Children[0].GetValue(Ctx);
   if Op = EmptySym then
@@ -489,7 +509,9 @@ begin
     Result := VM.Negate(V)
 end;
 
-{ TAstBinaryOp }
+{$EndRegion}
+
+{$Region 'TAstBinaryOp'}
 
 function TAstBinaryOp.GetType(Ctx: TELContext): PTypeInfo;
 begin
@@ -497,7 +519,8 @@ begin
 end;
 
 function TAstBinaryOp.GetValue(Ctx: TELContext): TValue;
-var X, Y: TValue;
+var
+  X, Y: TValue;
 begin
   X := Children[0].GetValue(Ctx);
   Y := Children[1].GetValue(Ctx);
@@ -519,7 +542,9 @@ begin
   end;
 end;
 
-{ TAstIdentifier }
+{$EndRegion}
+
+{$Region 'TAstIdentifier'}
 
 constructor TAstIdentifier.Create(Op: TSymbol; const Ident: string);
 begin
@@ -592,7 +617,9 @@ begin
   Ctx.GetElResolver.SetValue(Ctx, nil, Image, Value);
 end;
 
-{ TCachedExpression }
+{$EndRegion}
+
+{$Region 'TCachedExpression'}
 
 constructor TCachedExpression.Create;
 begin
@@ -601,7 +628,8 @@ begin
 end;
 
 destructor TCachedExpression.Destroy;
-var Item: TPair<string, TNode>;
+var
+  Item: TPair<string, TNode>;
 begin
   for Item in FTable do
     Item.Value.Free;
@@ -643,7 +671,9 @@ begin
     Inc(FIdent.RefCount);
 end;
 
-{ TUserVarExpression }
+{$EndRegion}
+
+{$Region 'TUserVarExpression'}
 
 function TUserVarExpression.GetValue(Ctx: TElContext): TValue;
 begin
@@ -654,6 +684,8 @@ procedure TUserVarExpression.SetValue(Ctx: TElContext; Value: TValue);
 begin
   FValue := Value;
 end;
+
+{$EndRegion}
 
 end.
 

@@ -94,7 +94,8 @@ type
 
 {$EndRegion}
 
-  // List of variables (used when parsing an expression)
+{$Region 'TVariableMapper: List of variables (used when parsing an expression)'}
+
   TVariableMapper = class
   private
     FMap: TDictionary<string, TValueExpression>;
@@ -109,7 +110,10 @@ type
     property Map: TDictionary<string, TValueExpression> read FMap;
   end;
 
-  // List of functions (used when parsing an expression)
+{$EndRegion}
+
+{$Region 'TFunctionMapper: List of functions (used when parsing an expression)'}
+
   TFunctionMapper = class
   private
     FMap: TDictionary<string, TMethodExpression>;
@@ -119,6 +123,10 @@ type
     function ResolveFunction(const Prefix, LocalName: string): TMethodExpression;
     procedure AddFunction(const Prefix, LocalName: string; Method: TMethodExpression);
   end;
+
+{$EndRegion}
+
+{$Region 'TElResolver'}
 
   // Tries to get or set the property value
   // If the attempt was successful - sets the Ctx.PropertyResolved property  TElResolver = class
@@ -134,7 +142,10 @@ type
     function GetCommonPropertyType(Ctx: TElContext; Obj: TObject): PTypeInfo; virtual;
   end;
 
-  // Context for calculating expressions
+{$EndRegion}
+
+{$Region 'TElContext: Context for calculating expressions'}
+
   TElContext = class(TSingletonImplementation)
   private
     FPropertyResolved: Boolean;
@@ -156,9 +167,11 @@ type
     property PropertyResolved: Boolean read FPropertyResolved write FPropertyResolved;
   end;
 
+{$EndRegion}
+
 implementation
 
-{ TExpression }
+{$Region 'TExpression'}
 
 constructor TExpression.Create(const aExpressionString: string);
 begin
@@ -171,7 +184,9 @@ begin
   Result := FExpr;
 end;
 
-{ TValueExpression }
+{$EndRegion}
+
+{$Region 'TValueExpression'}
 
 function TValueExpression.GetType(Ctx: TElContext): PTypeInfo;
 begin
@@ -188,7 +203,9 @@ begin
   raise Exception.Create('Unsupported method');
 end;
 
-{ TVariableMapper }
+{$EndRegion}
+
+{$Region 'TVariableMapper'}
 
 constructor TVariableMapper.Create;
 begin
@@ -221,7 +238,9 @@ begin
   FMap.AddOrSetValue(Variable, Expression);
 end;
 
-{ TFunctionMapper }
+{$EndRegion}
+
+{$Region 'TFunctionMapper'}
 
 constructor TFunctionMapper.Create;
 begin
@@ -243,7 +262,8 @@ begin
 end;
 
 function TFunctionMapper.ResolveFunction(const Prefix, LocalName: string): TMethodExpression;
-var R: TMethodExpression;
+var
+  R: TMethodExpression;
 begin
   if FMap.TryGetValue(Prefix + ':' +  LocalName, R) then
     Result := R
@@ -251,7 +271,9 @@ begin
     Result := nil;
 end;
 
-{ TElContext }
+{$EndRegion}
+
+{$Region 'TElContext'}
 
 constructor TElContext.Create;
 begin
@@ -291,7 +313,9 @@ begin
   FContextObjects.AddOrSetValue(Key, ContextObject);
 end;
 
-{ TElResolver }
+{$EndRegion}
+
+{$Region 'TElResolver'}
 
 function TElResolver.GetCommonPropertyType(Ctx: TElContext; Obj: TObject): PTypeInfo;
 begin
@@ -307,6 +331,8 @@ procedure TElResolver.SetValue(Ctx: TElContext; Obj: TObject; const Prop: TValue
 begin
   raise Exception.Create('Unsupported method');
 end;
+
+{$EndRegion}
 
 end.
 

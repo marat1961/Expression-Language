@@ -23,8 +23,9 @@ interface
 uses
   Classes, SysUtils, Rtti, Dialogs, Oz.El.Scanner, Oz.El.Ast;
 
+{$Region 'TELParser: Expression parser'}
+
 type
-  // Expression parser
   TELParser = class
   private
     FScanner: TELScanner;
@@ -57,12 +58,14 @@ type
     property ErrorCount: Integer read FErrorCount;
   end;
 
+{$EndRegion}
+
 implementation
 
 const
   minErrDist = 2;
 
-{ TELParser }
+{$Region 'TELParser'}
 
 constructor TELParser.Create(const Source: string);
 begin
@@ -113,7 +116,8 @@ begin
 end;
 
 function TELParser.Choice: TNode;
-var X: TNode;
+var
+  X: TNode;
 begin
   X := Expression;
   if Sym = QuerySym then
@@ -128,7 +132,9 @@ begin
 end;
 
 function TELParser.Expression: TNode;
-var X: TNode; Op: TSymbol;
+var
+  X: TNode;
+  Op: TSymbol;
 begin
   X := SimpleExpression;
   if Sym in [EqSym, GtSym, LtSym, GeSym, LeSym, EqSym, NeSym] then
@@ -141,7 +147,10 @@ begin
 end;
 
 function TELParser.SimpleExpression: TNode;
-var X: TNode; Op: TSymbol; i: Integer;
+var
+  i: Integer;
+  X: TNode;
+  Op: TSymbol;
 begin
   if Sym = PlusSym then
   begin
@@ -168,7 +177,10 @@ begin
 end;
 
 function TELParser.Term: TNode;
-var X: TNode; Op: TSymbol; i: Integer;
+var
+  i: Integer;
+  X: TNode;
+  Op: TSymbol;
 begin
   X := Factor;
   i := 0;
@@ -184,7 +196,9 @@ begin
 end;
 
 function TELParser.Factor: TNode;
-var X: TNode; NameSpace, Ident: string;
+var
+  X: TNode;
+  NameSpace, Ident: string;
 begin
   { sync }
   if Sym < LparenSym then
@@ -236,7 +250,8 @@ begin
 end;
 
 procedure TELParser.Designator(X: TNode);
-var Y: TNode;
+var
+  Y: TNode;
 begin
   while (Sym = LbrackSym) or (Sym = PointSym) or (Sym = LparenSym) do
   begin
@@ -316,6 +331,8 @@ begin
   else
     SynError(Ord(n));
 end;
+
+{$EndRegion}
 
 end.
 

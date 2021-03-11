@@ -144,7 +144,8 @@ begin
 end;
 
 function TELScanner.Find(const Id: string): TSymbol;
-var Idx: Integer;
+var
+  Idx: Integer;
 begin
   if FKeyTab.Find(Id, Idx) then
     Result := TSymbol(FKeyTab.Objects[Idx])
@@ -322,7 +323,8 @@ begin
 end;
 
 procedure TELScanner.GetString;
-var Limiter: Char;
+var
+  Limiter: Char;
 begin
   FSym := StringSym;
   Limiter := Ch;
