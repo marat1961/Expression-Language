@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{9E2100F4-11F5-4DF7-B5B4-5947BCBDF2A9}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="test\ElTests.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="OzEl.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ElTests">
+        <MSBuild Projects="test\ElTests.dproj"/>
+    </Target>
+    <Target Name="ElTests:Clean">
+        <MSBuild Projects="test\ElTests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ElTests:Make">
+        <MSBuild Projects="test\ElTests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="OzEl">
+        <MSBuild Projects="OzEl.dproj"/>
+    </Target>
+    <Target Name="OzEl:Clean">
+        <MSBuild Projects="OzEl.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OzEl:Make">
+        <MSBuild Projects="OzEl.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ElTests;OzEl"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ElTests:Clean;OzEl:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ElTests:Make;OzEl:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
