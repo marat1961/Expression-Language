@@ -35,9 +35,23 @@ implementation
 uses
   Oz.El.Scanner, Oz.El.Classes, Oz.El.Parser, Oz.El.Utils;
 
-{$Region 'TExpressionFactory'}
+{$Region 'TMyModel'}
 
 type
+  TMyModel = class
+  private
+    FCount: Integer;
+  public
+    // My function
+    function GetMyFunc: Integer;
+    // Return count
+    function GetCount: Integer;
+  end;
+
+{$EndRegion}
+
+{$Region 'TExpressionFactory'}
+
   TExpressionFactory = class(TSingletonImplementation, IExpressionFactory)
   private
     class var Factory: TExpressionFactory;
@@ -75,6 +89,10 @@ type
     function GetElResolver: TElResolver; override;
     function GetVariableMapper: TVariableMapper; override;
     function GetFunctionMapper: TFunctionMapper; override;
+    // My function
+    function GetMyFunc: Integer;
+    // Return count
+    function GetCount: Integer;
   end;
 
 {$EndRegion}
@@ -163,6 +181,22 @@ begin
   Result := FVarMap;
 end;
 
+function TMyContext.GetMyFunc: Integer;
+begin
+  Result := ;
+end;
+
+function TMyContext.GetCount: Integer;
+var
+  Model: TMyModel;
+begin
+  Model := GetContext(TMyModel) as TMyModel;
+  if Model = nil then
+    Result := -1
+  else
+    Result := Model.Count;
+end;
+
 {$EndRegion}
 
 {$Region 'TValueExpression'}
@@ -215,8 +249,8 @@ begin
   begin
     Ctx.PropertyResolved := True;
     s := LowerCase(Prop.AsString);
-    if s = 'MyFunc' then
-      Result := TMyContext(Ctx).GetMyFunc + 1
+    if s = 'myfunc' then
+      Result := TMyContext(Ctx).GetMyFunc
     else if s = 'count' then
       Result := TMyContext(Ctx).GetCount
     else
@@ -245,6 +279,21 @@ end;
 procedure CloseElFactory;
 begin
   FreeAndNil(TExpressionFactory.Factory);
+end;
+
+{$EndRegion}
+
+{$Region 'TMyModel'}
+
+function TMyModel.GetCount: Integer;
+begin
+  Result := FCount;
+end;
+
+function TMyModel.GetMyFunc: Integer;
+begin
+  Inc(FCount);
+  Result := FCount;
 end;
 
 {$EndRegion}
