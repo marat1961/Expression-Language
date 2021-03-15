@@ -48,20 +48,26 @@ IGNORE eol + lf + tab
 
 PRODUCTIONS
 
-El
+El                           (. var
+                                  r: TNode; .)
  =
-"${" Value '}'
-| "#{" Value '}'
+{ CompositeExpression<r> }
 .
 
-Value
+CompositeExpression<var r: TNode>
  =
-Expression
-[ '?' Expression ':' Expression
+"${" Value<r> '}'
+| "#{" Value<r> '}'
+.
+
+Value<var r: TNode>
+ =
+Expression<r>
+[ '?' Expression<r> ':' Expression<r>
 ]
 .
 
-Expression
+Expression<var r: TNode>
  =
 SimpleExpression
 [ RelOp SimpleExpression
@@ -79,14 +85,16 @@ Factor
 }
 .
 
-Factor
+Factor                       (. var
+                                  r: TNode;
+                                  NameSpace, Ident: string; .)
  =
 Number
 | String
 | "true" | "false"
 | ("null" | "nil")
 | ('!' | "not") Factor
-| '(' Expression ')'
+| '(' Expression<r> ')'
 | Designator
 [ Parameters 
 ]
@@ -94,7 +102,7 @@ Number
 
 Designator = {
 '.' Identifier
-| '[' Expression ']'
+| '[' Expression<r> ']'
 }
 .
  

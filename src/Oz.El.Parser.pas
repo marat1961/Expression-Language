@@ -86,8 +86,9 @@ function TELParser.CompositeExpression: TAstCompositeExpression;
 var
   X: TNode;
 begin
-  // A compound expression is a text within which there are expressions
-  // enclosed in brackets  Result := TAstCompositeExpression.Create(Sym);
+  // A compound expression is a text,
+  // within which there are expressions enclosed in brackets
+  Result := TAstCompositeExpression.Create(Sym);
   X := nil;
   repeat
     if Sym = TextSym then
