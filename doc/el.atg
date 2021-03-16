@@ -51,13 +51,18 @@ PRODUCTIONS
 El                           (. var
                                   r: TNode; .)
  =
-{ CompositeExpression<r> }
+                             (. r := TAstCompositeExpression.Create(Sym); .)
+CompositeExpression<r>
+{  CompositeExpression<r> }
 .
 
 CompositeExpression<var r: TNode>
- =
-"${" Value<r> '}'
-| "#{" Value<r> '}'
+                             (. var
+                                  x: TNode; .)
+ =                           (. x := nil; .)
+( "${" Value<x> '}'
+| "#{" Value<x> '}'
+)                            (. r.Children.Add(x); .)
 .
 
 Value<var r: TNode>
@@ -69,12 +74,15 @@ Expression<r>
 
 Expression<var r: TNode>
  =
-SimpleExpression
-[ RelOp SimpleExpression
+SimpleExpression<r>
+[ RelOp SimpleExpression<r>
 ]
 .
 
-SimpleExpression = [ UnaryOp ] Term { AddOp Term }
+SimpleExpression<var r: TNode>
+ =
+[ UnaryOp ] Term
+{ AddOp Term }
 .
 
 Term 
@@ -107,8 +115,8 @@ Designator = {
 .
  
 Parameters = '(' [
-Expression 
-{ ',' Expression } 
+Expression<r>
+{ ',' Expression<r> }
 ] ')'
 .
 
