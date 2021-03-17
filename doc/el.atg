@@ -75,36 +75,46 @@ Expression<r>
 Expression<var r: TNode>
  =
 SimpleExpression<r>
-[ RelOp SimpleExpression<r>
+[ RelOp<op> SimpleExpression<r>
 ]
 .
 
 SimpleExpression<var r: TNode>
+                             (. var
+                                  op: TOp;
+                                  x: TNode; .)
  =
-[ UnaryOp ] Term
-{ AddOp Term }
+[ UnaryOp<op> ]
+Term<x>                      (. if op = opPlus then
+                                  r := x
+                                else
+                                  r := TAstUnaryOp.Create(op, x); .)
+{ AddOp<op> Term<x> }
 .
 
-Term 
+Term<var r: TNode>           (. var
+                                  op: TOp;
+                                  x: TNode; .)
  =
-Factor
-{ MulOp 
-Factor 
+Factor<x>
+{ MulOp<op>
+Factor<x>
 }
 .
 
-Factor                       (. var
-                                  r: TNode;
+Factor<var r: TNode>         (. var
+                                  x: TNode;
                                   NameSpace, Ident: string; .)
  =
 Number
 | String
 | "true" | "false"
 | ("null" | "nil")
-| ('!' | "not") Factor
+| ('!' | "not")
+Factor<x>
 | '(' Expression<r> ')'
 | Designator
-[ Parameters 
+[ Parameters
 ]
 .
 
@@ -127,7 +137,7 @@ Int
 | Float
 .
 
-AddOp
+AddOp<var op: TOp>
  =
 '+'
 | '-' 
@@ -135,13 +145,14 @@ AddOp
 )
 .
 
-UnaryOp
- = 
-'-'
+UnaryOp<var op: TOp>
+ =
+'+'
+| '-'
 | "empty"
 .
 
-MulOp
+MulOp<var op: TOp>
  =
 ( "and" | "&&" 
 )
@@ -152,7 +163,8 @@ MulOp
 )
 .
  
-RelOp = 
+RelOp<var op: TOp>
+ =
 ( '>' | "gt"
 )
 | ('<' | "lt"
