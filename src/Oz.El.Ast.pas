@@ -139,7 +139,7 @@ type
 
 {$EndRegion}
 
-{$Region 'TAstUnaryOp: Unary operation - [ '+' | '-' | 'empty' | 'not' ] Expr'}
+{$Region 'TAstUnaryOp: Unary operation - [ `+` | `-` | `empty` | `not` ] Expr'}
 
   TAstUnaryOp = class(TNode)
   public
@@ -149,7 +149,7 @@ type
 
 {$EndRegion}
 
-{$Region 'TAstBinaryOp: Binary operation - '+' | '-' | '*' | '/' | 'div' | 'mod' ...'}
+{$Region 'TAstBinaryOp: Binary operation - `+` | `-` | `*` | `/` | `div` | `mod`' ...'}
 
   TAstBinaryOp = class(TNode)
   public

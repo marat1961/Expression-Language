@@ -139,43 +139,42 @@ Int
 
 AddOp<var op: TOp>
  =
-'+'
-| '-' 
-| ( "or" | "||"
+'+'                          (. op := opPlus; .)
+| '-'                        (. op := opMinus; .)
+| ( "or" | "||"              (. op := opOr; .)
 )
 .
 
 UnaryOp<var op: TOp>
  =
-'+'
-| '-'
-| "empty"
+'-'                          (. op := opMinus; .)
+| "empty"                    (. op := opEmpty; .)
 .
 
 MulOp<var op: TOp>
  =
-( "and" | "&&" 
+( "and" | "&&"               (. op := opAnd; .)
 )
-| '*'
-| '/'
+| '*'                        (. op := opMul; .)
+| '/'                        (. op := opDiv; .)
 | "div"
-| ( '%' | "mod"
+| ( '%' | "mod"              (. op := opMod; .)
 )
 .
  
 RelOp<var op: TOp>
  =
-( '>' | "gt"
+( '>' | "gt"                 (. op := opGt; .)
 )
-| ('<' | "lt"
+| ('<' | "lt"                (. op := opLt; .)
 )
-| (">=" | "ge"
+| (">=" | "ge"               (. op := opGe; .)
 )
-| ("<=" | "le"
+| ("<=" | "le"               (. op := opLe; .)
 )
-| ('=' | "==" | "eq"
+| ('=' | "==" | "eq"         (. op := opEq; .)
 )
-| ("!=" | "<>" | "ne"
+| ("!=" | "<>" | "ne"        (. op := opNe; .)
 )
 .
 
